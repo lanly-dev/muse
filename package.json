@@ -68,14 +68,56 @@
       }
     ],
     "configuration": {
-      "title": "Muse",
       "properties": {
+        "muse.colorTargets": {
+          "default": [
+            "statusBar",
+            "titleBar",
+            "activityBar"
+          ],
+          "description": "Which workbench surfaces follow the melody (e.g. statusBar, titleBar, activityBar, sideBar).",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "muse.defaultStation": {
+          "default": "neon-rain",
+          "description": "Generative station the player starts on.",
+          "enum": [
+            "neon-rain",
+            "solar-drift",
+            "night-drive"
+          ],
+          "type": "string"
+        },
+        "muse.intensity": {
+          "default": 0.7,
+          "description": "How strongly the music swings saturation and lightness (0 = subtle, 1 = vivid).",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
         "muse.reactiveColors": {
-          "type": "boolean",
           "default": true,
-          "description": "Shift the workbench UI colors with the melody while music plays."
+          "description": "Shift the workbench UI colors with the melody while music plays.",
+          "type": "boolean"
+        },
+        "muse.updateIntervalMs": {
+          "default": 300,
+          "description": "Minimum milliseconds between workbench color updates.",
+          "minimum": 120,
+          "type": "number"
+        },
+        "muse.volume": {
+          "default": 0.8,
+          "description": "Player volume.",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
         }
-      }
+      },
+      "title": "Muse"
     }
   },
   "scripts": {
