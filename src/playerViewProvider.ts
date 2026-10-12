@@ -39,14 +39,12 @@ export class MuseViewProvider implements vscode.WebviewViewProvider {
 	static register(
 		context: vscode.ExtensionContext,
 		controller: PlayerController
-	): void {
+	): vscode.Disposable {
 		const provider = new MuseViewProvider(context, controller);
-		context.subscriptions.push(
-			vscode.window.registerWebviewViewProvider(
-				PLAYER_VIEW_ID,
-				provider,
-				{ webviewOptions: { retainContextWhenHidden: true } }
-			)
+		return vscode.window.registerWebviewViewProvider(
+			PLAYER_VIEW_ID,
+			provider,
+			{ webviewOptions: { retainContextWhenHidden: true } }
 		);
 	}
 }
