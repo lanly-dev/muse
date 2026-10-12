@@ -42,16 +42,13 @@ activity bar — so the editor glows with the song.
 
 ## Extension Settings
 
-- `muse.reactiveColors` — shift workbench colors with the melody
-  (default `true`)
-- `muse.colorTargets` — which surfaces follow the music
-  (default `["statusBar", "titleBar", "activityBar"]`)
-- `muse.intensity` — how strongly the music swings the colors, 0–1
-  (default `0.7`)
-- `muse.updateIntervalMs` — minimum ms between color updates
-  (default `300`)
-- `muse.defaultStation` — station the player starts on
-- `muse.volume` — player volume
+This extension contributes one setting:
+
+- `muse.reactiveColors` — shift the workbench UI colors with the melody
+  while music plays (default `true`).
+
+Everything else (color targets, intensity, update rate, default station,
+volume) is fixed or lives in the player UI itself.
 
 ## Roadmap
 
