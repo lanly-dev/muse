@@ -191,8 +191,10 @@ export class PlayerController {
 				break;
 			case 'track':
 				this.onTrackChange(msg.track, msg.playing);
-				if (msg.ended) {
-					// Natural end of a file: behave like Stop.
+				if (msg.ended || (!msg.playing && !msg.track)) {
+					// Stopped from the player UI, or natural end of a file:
+					// restore the user's colors like the Stop command does.
+					// (Pause keeps the track, so it never hits this branch.)
 					void this.applier.stop();
 				}
 				break;
