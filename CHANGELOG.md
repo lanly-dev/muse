@@ -6,4 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+## [0.0.1] - 2026-10-11
+
+- Initial release: three generative stations (Neon Rain, Solar Drift,
+  Night Drive), local audio file playback, and melody-reactive
+  workbench colors (status bar, title bar, activity bar) with
+  snapshot/restore.

@@ -1,71 +1,70 @@
-# muse README
+# Muse — music that colors your editor
 
-This is the README for your extension "muse". After writing up a brief description, we recommend including the following sections.
+Muse plays music inside VS Code and turns the melody into UI color. A
+generative synth engine composes endless lofi / ambient / synthwave
+melodies (no audio files needed), or play your own MP3/WAV/OGG files.
+While music plays, real-time analysis (pitch-class chroma, energy,
+brightness) drives the workbench colors — status bar, title bar,
+activity bar — so the editor glows with the song.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Generative stations** — three built-in moods, composed live in your
+  editor with the Web Audio API:
+  - *Neon Rain* — rainy-night lofi, A minor, 92 BPM
+  - *Solar Drift* — warm morning pads, C major, 76 BPM
+  - *Night Drive* — synthwave pulse, G dorian, 104 BPM
+- **Your own files** — `Muse: Play Audio File…` plays MP3, WAV, OGG,
+  M4A, FLAC, AAC from your machine, analyzed with a real FFT
+  chromagram.
+- **Melody-reactive UI** — dominant pitch class → hue (C = red, walking
+  the chromatic wheel), energy → saturation, timbre brightness →
+  lightness. Updates are smoothed and throttled; your own
+  `workbench.colorCustomizations` are snapshotted and restored when you
+  stop.
+- **Player panel** — transport controls, volume, loop toggle, and a
+  live 12-note chroma visualizer. Music keeps playing when the panel is
+  hidden.
+- **Status bar** — shows the current track; click to open the player.
 
-For example if there is an image subfolder under your extension project workspace:
+## Commands
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+| Command | What it does |
+|---|---|
+| `Muse: Open Player` | Open the player panel |
+| `Muse: Play` | Start the default generative station |
+| `Muse: Play / Pause` | Toggle playback |
+| `Muse: Next Station` | Switch to the next generative station |
+| `Muse: Play Audio File…` | Pick and play a local audio file |
+| `Muse: Stop and Restore Colors` | Stop playback, restore your theme colors |
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- `muse.reactiveColors` — shift workbench colors with the melody
+  (default `true`)
+- `muse.colorTargets` — which surfaces follow the music
+  (default `["statusBar", "titleBar", "activityBar"]`)
+- `muse.intensity` — how strongly the music swings the colors, 0–1
+  (default `0.7`)
+- `muse.updateIntervalMs` — minimum ms between color updates
+  (default `300`)
+- `muse.defaultStation` — station the player starts on
+- `muse.volume` — player volume
 
-For example:
+## Roadmap
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- Synced lyrics display
+- Rave mode (full-intensity party visuals)
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Browsers block audio until you interact with the page: if you start
+  playback from the command palette, click once inside the player panel
+  to enable sound.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release: generative stations, local file playback,
+melody-reactive workbench colors.

@@ -1,0 +1,43 @@
+<body>
+  <div id="app">
+    <header>
+      <div class="brand"><span class="logo">♪</span> Muse</div>
+      <div class="volume">
+        <span>🔈</span>
+        <input id="volume" type="range" min="0" max="100" value="80" />
+      </div>
+    </header>
+
+    <div id="now-playing">
+      <div id="track-title">Nothing playing</div>
+      <div id="track-subtitle">Pick a station or open an audio file</div>
+    </div>
+
+    <canvas id="viz" width="600" height="140"></canvas>
+
+    <div class="transport">
+      <button id="btn-play" class="primary" title="Play / pause">▶</button>
+      <button id="btn-next" title="Next station">⏭</button>
+      <button id="btn-file" title="Open audio file">📂</button>
+      <button id="btn-loop" title="Loop file">🔁</button>
+      <button id="btn-stop" title="Stop and restore colors">⏹</button>
+    </div>
+
+    <div class="stations-label">Stations</div>
+    <div id="stations"></div>
+
+    <footer>
+      The melody colors your editor — status bar, title bar, activity bar.<br />
+      <span class="dim">Lyrics + rave mode coming later.</span>
+    </footer>
+
+    <div id="audio-gate" class="hidden">
+      <div class="gate-card">
+        <div class="gate-title">🔇 Sound is blocked</div>
+        <div class="gate-sub">Click anywhere to enable audio</div>
+      </div>
+    </div>
+  </div>
+  <!--MUSE_CSS-->
+  <!--MUSE_JS-->
+</body>
