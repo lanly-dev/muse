@@ -5,6 +5,13 @@
 export const DEFAULT_STATION = 'neon-rain';
 export const DEFAULT_INTENSITY = 0.7;
 export const UPDATE_INTERVAL_MS = 300;
-export const COLOR_TARGETS = ['statusBar', 'titleBar', 'activityBar'];
+export const COLOR_TARGETS = [
+	'statusBar',
+	'titleBar',
+	'activityBar',
+	'sideBar',
+	'panel',
+	'editor',
+];
 export const DEFAULT_VOLUME = 0.8;
 export const VOLUME_STATE_KEY = 'muse.volume';

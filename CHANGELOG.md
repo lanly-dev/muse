@@ -6,11 +6,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Player moved from a webview panel to an activity-bar view
-  (`muse-player` container, `muse.playerView`); single audio owner, no
-  double playback.
-- Colors are now written to the workspace settings scope only — user
-  preferences are never touched (a workspace folder must be open).
+- Colors are now written to the **global** settings scope, so the
+  melody-reactive UI works with or without a workspace folder open.
+  Your pre-play global colors are snapshotted and restored exactly on
+  stop (only the keys Muse manages are touched); the persisted profile
+  now uses a versioned wrapper so "no prior value" restores cleanly.
+- The whole IDE follows the melody: status bar, title bar, activity
+  bar, side bar, panel, and editor background.
 - Pre-play colors are saved as a persisted profile; stopping restores
   them, including when stopping from the player UI, and a profile left
   behind by a mid-play shutdown is restored on next launch.
