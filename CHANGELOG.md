@@ -13,6 +13,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   now uses a versioned wrapper so "no prior value" restores cleanly.
 - The whole IDE follows the melody: status bar, title bar, activity
   bar, side bar, panel, and editor background.
+- **Rave mode** — 🪩 button in the player or `Muse: Toggle Rave Mode`:
+  snappy color tracking, full saturation, and brightness flashes on
+  energy onsets. Choice persists across restarts.
 - Pre-play colors are saved as a persisted profile; stopping restores
   them, including when stopping from the player UI, and a profile left
   behind by a mid-play shutdown is restored on next launch.

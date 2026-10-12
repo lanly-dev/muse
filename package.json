@@ -65,6 +65,10 @@
       {
         "command": "muse.stop",
         "title": "Muse: Stop and Restore Colors"
+      },
+      {
+        "command": "muse.toggleRaveMode",
+        "title": "Muse: Toggle Rave Mode"
       }
     ],
     "configuration": {
