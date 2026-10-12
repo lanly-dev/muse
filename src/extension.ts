@@ -15,8 +15,10 @@ let applierRef: ColorApplier | undefined;
 export function activate(context: ExtensionContext) {
 	const rc = commands.registerCommand;
 
-	const applier = new ColorApplier();
+	const applier = new ColorApplier(context);
 	applierRef = applier;
+	// Restore a color profile left behind if the last session ended mid-play.
+	void applier.restoreLeftoverProfile();
 	const statusBar = new MuseStatusBar();
 	const player = new PlayerController(context, applier, (track, playing) =>
 		statusBar.update(track, playing)

@@ -19,9 +19,11 @@ activity bar — so the editor glows with the song.
   chromagram.
 - **Melody-reactive UI** — dominant pitch class → hue (C = red, walking
   the chromatic wheel), energy → saturation, timbre brightness →
-  lightness. Updates are smoothed and throttled; your own
-  `workbench.colorCustomizations` are snapshotted and restored when you
-  stop.
+  lightness. Updates are smoothed and throttled; colors are written to
+  the **workspace** settings scope only (your user settings are never
+  touched). Your pre-play colors are saved as a profile and restored
+  when you stop — even if the window closed mid-song, the leftover
+  profile is restored on next launch.
 - **Player in the activity bar** — transport controls, volume, loop toggle,
   and a live 12-note chroma visualizer, docked in the sidebar. Music keeps
   playing when the view is hidden.

@@ -7,13 +7,21 @@ import {
 	lerpAngle,
 } from './colors';
 
+/** globalState key holding the saved pre-play color profile. */
+const PROFILE_KEY = 'muse.colorProfile';
+
 /**
  * Applies melody-driven colors to the workbench and restores the user's
  * own colors when playback stops.
  *
- * - Smooths hue (circular), energy and brightness so colors glide instead of jump.
- * - Throttles settings writes and skips imperceptible changes.
- * - Snapshots workbench.colorCustomizations on first apply; restores on stop.
+ * - Colors are written to the **workspace** configuration scope only;
+ *   the user's global preferences are never touched.
+ * - The pre-play workspace colors are saved as a "profile" (in memory
+ *   and persisted to globalState), so restore works even if the window
+ *   closes mid-play — a leftover profile is restored on next activation.
+ * - Smoothing: hue glides circularly, energy has fast attack / slow
+ *   release, so colors flow instead of jumping.
+ * - Settings writes are throttled and imperceptible changes are skipped.
  */
 export class ColorApplier {
 	private timer: NodeJS.Timeout | undefined;
@@ -21,10 +29,14 @@ export class ColorApplier {
 	private lastHue: number | undefined;
 	private lastSat = 0;
 	private lastLight = 0;
+	/** The workspace-scope colorCustomizations from before we touched them. */
 	private snapshot: Record<string, string> | undefined;
 	private snapshotTaken = false;
 	private pending: AudioFeatures | undefined;
 	private active = false;
+	private warnedNoWorkspace = false;
+
+	constructor(private readonly context: vscode.ExtensionContext) {}
 
 	get isActive(): boolean {
 		return this.active;
@@ -50,6 +62,39 @@ export class ColorApplier {
 		}
 	}
 
+	/**
+	 * Restore a color profile left behind by a previous session that
+	 * ended (or crashed) mid-play. Safe to call on every activation.
+	 */
+	async restoreLeftoverProfile(): Promise<void> {
+		const saved = this.context.globalState.get<Record<string, string> | null>(
+			PROFILE_KEY
+		);
+		if (!saved) {
+			return;
+		}
+		// Clear first so a failed restore doesn't retry forever.
+		await this.context.globalState.update(PROFILE_KEY, null);
+		if (!this.hasWorkspace()) {
+			return;
+		}
+		try {
+			await vscode.workspace
+				.getConfiguration('workbench')
+				.update(
+					'colorCustomizations',
+					saved,
+					vscode.ConfigurationTarget.Workspace
+				);
+		} catch (err) {
+			console.error('[muse] failed to restore leftover color profile', err);
+		}
+	}
+
+	private hasWorkspace(): boolean {
+		return (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
+	}
+
 	private async tick(): Promise<void> {
 		const features = this.pending;
 		this.pending = undefined;
@@ -58,6 +103,15 @@ export class ColorApplier {
 		}
 		const cfg = vscode.workspace.getConfiguration('muse');
 		if (!cfg.get<boolean>('reactiveColors', true)) {
+			return;
+		}
+		if (!this.hasWorkspace()) {
+			if (!this.warnedNoWorkspace) {
+				this.warnedNoWorkspace = true;
+				void vscode.window.showWarningMessage(
+					'Muse: open a workspace folder for the melody-reactive colors — Muse never touches your user settings.'
+				);
+			}
 			return;
 		}
 		const intensity = clamp01(cfg.get<number>('intensity', 0.7));
@@ -90,7 +144,7 @@ export class ColorApplier {
 			'titleBar',
 			'activityBar',
 		]);
-		const customizations = this.readCustomizations();
+		const customizations = this.readWorkspaceCustomizations();
 		let changed = false;
 		for (const target of targets) {
 			const bgKey = `${target}.background`;
@@ -108,8 +162,7 @@ export class ColorApplier {
 			return;
 		}
 		if (!this.snapshotTaken) {
-			this.snapshot = this.readCustomizations();
-			this.snapshotTaken = true;
+			this.takeSnapshot();
 		}
 		this.lastWrite = now;
 		try {
@@ -118,21 +171,37 @@ export class ColorApplier {
 				.update(
 					'colorCustomizations',
 					customizations,
-					vscode.ConfigurationTarget.Global
+					vscode.ConfigurationTarget.Workspace
 				);
 		} catch (err) {
 			console.error('[muse] failed to apply colors', err);
 		}
 	}
 
-	private readCustomizations(): Record<string, string> {
-		const raw = vscode.workspace
+	/** The workspace-scope colorCustomizations, without touching other scopes. */
+	private readWorkspaceCustomizations(): Record<string, string> {
+		const inspected = vscode.workspace
 			.getConfiguration('workbench')
-			.get<Record<string, string>>('colorCustomizations');
-		return { ...(raw ?? {}) };
+			.inspect<Record<string, string>>('colorCustomizations');
+		return { ...(inspected?.workspaceValue ?? {}) };
 	}
 
-	/** Stop applying colors and restore the user's own colorCustomizations. */
+	/**
+	 * Save the user's pre-play workspace colors as the restore profile,
+	 * in memory and persisted so a mid-play shutdown can still restore.
+	 */
+	private takeSnapshot(): void {
+		const inspected = vscode.workspace
+			.getConfiguration('workbench')
+			.inspect<Record<string, string>>('colorCustomizations');
+		this.snapshot = inspected?.workspaceValue
+			? { ...inspected.workspaceValue }
+			: undefined;
+		this.snapshotTaken = true;
+		void this.context.globalState.update(PROFILE_KEY, this.snapshot ?? null);
+	}
+
+	/** Stop applying colors and restore the saved profile to the workspace scope. */
 	async stop(): Promise<void> {
 		this.active = false;
 		if (this.timer) {
@@ -144,19 +213,23 @@ export class ColorApplier {
 		this.lastSat = 0;
 		this.lastLight = 0;
 		if (this.snapshotTaken) {
-			const snapshot = this.snapshot ?? {};
+			// undefined snapshot removes our workspace-level keys entirely.
+			const snapshot = this.snapshot;
 			this.snapshot = undefined;
 			this.snapshotTaken = false;
-			try {
-				await vscode.workspace
-					.getConfiguration('workbench')
-					.update(
-						'colorCustomizations',
-						snapshot,
-						vscode.ConfigurationTarget.Global
-					);
-			} catch (err) {
-				console.error('[muse] failed to restore colors', err);
+			await this.context.globalState.update(PROFILE_KEY, null);
+			if (this.hasWorkspace()) {
+				try {
+					await vscode.workspace
+						.getConfiguration('workbench')
+						.update(
+							'colorCustomizations',
+							snapshot,
+							vscode.ConfigurationTarget.Workspace
+						);
+				} catch (err) {
+					console.error('[muse] failed to restore colors', err);
+				}
 			}
 		}
 	}
