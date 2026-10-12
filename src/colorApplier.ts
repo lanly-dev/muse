@@ -9,6 +9,7 @@ import {
 import {
 	COLOR_TARGETS,
 	DEFAULT_INTENSITY,
+	RAVE_MODE_KEY,
 	UPDATE_INTERVAL_MS,
 } from './constants';
 
@@ -37,7 +38,8 @@ interface ColorProfile {
  *   so user preferences are never lost — a leftover profile is restored
  *   on next activation.
  * - Smoothing: hue glides circularly, energy has fast attack / slow
- *   release, so colors flow instead of jumping.
+ *   release, so colors flow instead of jumping. Rave mode snaps hard,
+ *   pushes full saturation, and flashes brightness on energy onsets.
  * - Settings writes are throttled and imperceptible changes are skipped.
  */
 export class ColorApplier {
@@ -51,11 +53,35 @@ export class ColorApplier {
 	private snapshotTaken = false;
 	private pending: AudioFeatures | undefined;
 	private active = false;
+	/** Club/rave dynamics: snappy tracking, full saturation, beat flashes. */
+	private raveMode = false;
+	private beatPeak = 0;
+	private flash = 0;
 
-	constructor(private readonly context: vscode.ExtensionContext) {}
+	constructor(private readonly context: vscode.ExtensionContext) {
+		this.raveMode = context.globalState.get<boolean>(RAVE_MODE_KEY, false);
+	}
 
 	get isActive(): boolean {
 		return this.active;
+	}
+
+	get isRaveMode(): boolean {
+		return this.raveMode;
+	}
+
+	/** Toggle rave mode. Returns the new state. */
+	toggleRaveMode(): boolean {
+		this.setRaveMode(!this.raveMode);
+		return this.raveMode;
+	}
+
+	setRaveMode(enabled: boolean): void {
+		this.raveMode = enabled;
+		// Reset beat tracking so the flash starts clean.
+		this.beatPeak = 0;
+		this.flash = 0;
+		void this.context.globalState.update(RAVE_MODE_KEY, enabled);
 	}
 
 	/** Begin accepting features. Call once when playback starts. */
@@ -108,8 +134,9 @@ export class ColorApplier {
 		if (!reactive) {
 			return;
 		}
-		const intensity = clamp01(DEFAULT_INTENSITY);
-		const intervalMs = Math.max(120, UPDATE_INTERVAL_MS);
+		const intensity = this.raveMode ? 1 : clamp01(DEFAULT_INTENSITY);
+		// Rave mode writes as fast as the tick allows; normal mode stays throttled.
+		const intervalMs = this.raveMode ? 100 : Math.max(120, UPDATE_INTERVAL_MS);
 		const now = Date.now();
 		if (now - this.lastWrite < intervalMs) {
 			// Hold this frame for the next tick; keep smoothing state fresh.
@@ -117,19 +144,34 @@ export class ColorApplier {
 			return;
 		}
 
-		// Smooth: fast attack on energy, quick release; hue tracks briskly.
+		// Smooth: rave mode snaps hard and flashes on beats; normal mode flows.
+		const rave = this.raveMode;
 		const hue = chromaToHue(features.chroma);
+		const hueMix = rave ? 0.9 : 0.55;
 		this.lastHue =
-			this.lastHue === undefined ? hue : lerpAngle(this.lastHue, hue, 0.55);
+			this.lastHue === undefined ? hue : lerpAngle(this.lastHue, hue, hueMix);
 		const e = clamp01(features.energy);
-		this.lastSat += (e - this.lastSat) * (e > this.lastSat ? 0.6 : 0.25);
+		const satAttack = rave ? 0.95 : 0.6;
+		const satRelease = rave ? 0.5 : 0.25;
+		this.lastSat += (e - this.lastSat) * (e > this.lastSat ? satAttack : satRelease);
 		const b = clamp01(features.brightness);
-		this.lastLight += (b - this.lastLight) * 0.35;
+		this.lastLight += (b - this.lastLight) * (rave ? 0.65 : 0.35);
+
+		// Rave: punch brightness/saturation on energy onsets (kick-drum flash).
+		let flash = 0;
+		if (rave) {
+			if (e > 0.3 && e > this.beatPeak * 1.12) {
+				this.flash = 1;
+			}
+			this.beatPeak = Math.max(e, this.beatPeak * 0.94);
+			this.flash *= 0.7;
+			flash = this.flash;
+		}
 
 		const smoothed: AudioFeatures = {
 			chroma: hueToChromaHint(this.lastHue),
-			energy: this.lastSat,
-			brightness: this.lastLight,
+			energy: clamp01(this.lastSat + flash * 0.25),
+			brightness: clamp01(this.lastLight + flash * 0.3),
 		};
 		const { background, foreground } = featuresToColors(smoothed, intensity);
 
@@ -199,6 +241,8 @@ export class ColorApplier {
 		this.lastHue = undefined;
 		this.lastSat = 0;
 		this.lastLight = 0;
+		this.beatPeak = 0;
+		this.flash = 0;
 		if (this.snapshotTaken) {
 			const snapshot = this.snapshot;
 			this.snapshot = undefined;

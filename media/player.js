@@ -683,6 +683,9 @@
 		}
 	});
 	document.getElementById('btn-stop').addEventListener('click', doStop);
+	document.getElementById('btn-rave').addEventListener('click', () => {
+		vscode.postMessage({ type: 'toggle-rave' });
+	});
 	document.getElementById('volume').addEventListener('input', (e) => {
 		volume = e.target.value / 100;
 		if (master) {
@@ -730,6 +733,9 @@
 				if (master) {
 					master.gain.value = volume;
 				}
+				break;
+			case 'rave-mode':
+				document.getElementById('btn-rave').classList.toggle('active', msg.enabled);
 				break;
 		}
 	});

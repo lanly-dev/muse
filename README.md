@@ -31,6 +31,10 @@ IDE glows with the song.
   and a live 12-note chroma visualizer, docked in the sidebar. Music keeps
   playing when the view is hidden.
 - **Status bar** — shows the current track; click to open the player.
+- **Rave mode** — hit the 🪩 button (or `Muse: Toggle Rave Mode`) for
+  club-style visuals: colors snap instead of flowing, saturation goes
+  full, and energy onsets punch the brightness like kick-drum strobes.
+  It remembers your choice across restarts.
 
 ## Commands
 
@@ -42,6 +46,7 @@ IDE glows with the song.
 | `Muse: Next Station` | Switch to the next generative station |
 | `Muse: Play Audio File…` | Pick and play a local audio file |
 | `Muse: Stop and Restore Colors` | Stop playback, restore your theme colors |
+| `Muse: Toggle Rave Mode` | Club-style colors: snappy tracking, full saturation, beat flashes |
 
 ## Extension Settings
 
@@ -56,7 +61,6 @@ volume) is fixed or lives in the player UI itself.
 ## Roadmap
 
 - Synced lyrics display
-- Rave mode (full-intensity party visuals)
 
 ## Known Issues
 

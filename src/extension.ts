@@ -44,9 +44,10 @@ export function activate(context: ExtensionContext) {
 	const d6 = rc('muse.stop', () => {
 		void player.stopPlayback();
 	});
+	const d7 = rc('muse.toggleRaveMode', () => player.toggleRaveMode());
 
 	// Restore the user's colors when reactive colors are toggled off
-	const d7 = workspace.onDidChangeConfiguration(
+	const d8 = workspace.onDidChangeConfiguration(
 		(event: ConfigurationChangeEvent) => {
 			if (!event.affectsConfiguration('muse.reactiveColors')) {
 				return;
@@ -62,7 +63,7 @@ export function activate(context: ExtensionContext) {
 		}
 	);
 
-	context.subscriptions.push(d0, d1, d2, d3, d4, d5, d6, d7, statusBar);
+	context.subscriptions.push(d0, d1, d2, d3, d4, d5, d6, d7, d8, statusBar);
 }
 
 export function deactivate() {

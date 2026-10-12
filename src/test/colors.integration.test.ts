@@ -97,4 +97,35 @@ suite('ColorApplier integration (real VS Code)', () => {
 			'global colorCustomizations should be exactly restored after stop'
 		);
 	}).timeout(70000);
+
+	test('rave mode toggles and still applies/restores colors', async () => {
+		const applier = new ColorApplier(fakeContext());
+		const managed = museManagedKeys();
+
+		assert.strictEqual(applier.isRaveMode, false);
+		assert.strictEqual(applier.toggleRaveMode(), true);
+		assert.strictEqual(applier.isRaveMode, true);
+
+		const before = readGlobal();
+		// Punchy onsets: high energy bursts to trigger beat flashes.
+		applier.push(features(2, 0.95));
+
+		await waitFor(() => {
+			const applied = readGlobal();
+			return (
+				!!applied && managed.every((k) => applied[k]?.startsWith('#'))
+			);
+		}, 25000, 'rave mode colors to be applied at global scope');
+
+		await applier.stop();
+
+		await waitFor(() => {
+			try {
+				assert.deepStrictEqual(readGlobal(), before);
+				return true;
+			} catch {
+				return false;
+			}
+		}, 25000, 'global colorCustomizations to be exactly restored');
+	}).timeout(70000);
 });

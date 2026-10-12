@@ -20,12 +20,14 @@ export type WebviewIn =
 	| { type: 'track'; track: TrackInfo | undefined; playing: boolean; ended?: boolean }
 	| { type: 'request-file' }
 	| { type: 'set-volume'; volume: number }
+	| { type: 'toggle-rave' }
 	| { type: 'error'; message: string };
 
 export type WebviewOut =
 	| { cmd: 'transport'; action: 'play-synth' | 'play-file' | 'pause' | 'resume' | 'toggle' | 'stop'; station?: string; fileUri?: string; fileName?: string }
 	| { cmd: 'set-station'; station: string }
-	| { cmd: 'set-volume'; volume: number };
+	| { cmd: 'set-volume'; volume: number }
+	| { cmd: 'rave-mode'; enabled: boolean };
 
 const AUDIO_EXTENSIONS = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'];
 
@@ -117,6 +119,13 @@ export class PlayerController {
 		this.post({ cmd: 'transport', action: 'play-synth', station: '__next' });
 	}
 
+	/** Toggle rave mode and sync the player UI. Returns the new state. */
+	toggleRaveMode(): boolean {
+		const enabled = this.applier.toggleRaveMode();
+		this.post({ cmd: 'rave-mode', enabled });
+		return enabled;
+	}
+
 	async stopPlayback(): Promise<void> {
 		this.post({ cmd: 'transport', action: 'stop' });
 		await this.applier.stop();
@@ -187,6 +196,7 @@ export class PlayerController {
 						DEFAULT_VOLUME
 					),
 				});
+				this.post({ cmd: 'rave-mode', enabled: this.applier.isRaveMode });
 				break;
 			}
 			case 'features':
@@ -208,6 +218,9 @@ export class PlayerController {
 			case 'set-volume':
 				// Persisted silently; no user-facing setting for this.
 				void this.context.globalState.update(VOLUME_STATE_KEY, msg.volume);
+				break;
+			case 'toggle-rave':
+				this.toggleRaveMode();
 				break;
 			case 'error':
 				void vscode.window.showWarningMessage(`Muse: ${msg.message}`);

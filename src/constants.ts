@@ -15,3 +15,4 @@ export const COLOR_TARGETS = [
 ];
 export const DEFAULT_VOLUME = 0.8;
 export const VOLUME_STATE_KEY = 'muse.volume';
+export const RAVE_MODE_KEY = 'muse.raveMode';
