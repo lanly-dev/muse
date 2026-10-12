@@ -35,10 +35,14 @@ export class ColorApplier {
 		this.active = true;
 	}
 
-	/** Feed fresh audio features from the webview (~10-15 fps is plenty). */
+	/**
+	 * Feed fresh audio features from the webview (~10-15 fps is plenty).
+	 * Auto-starts the applier: features only flow while music is playing,
+	 * no matter whether playback began from a command or the player UI.
+	 */
 	push(features: AudioFeatures): void {
 		if (!this.active) {
-			return;
+			this.start();
 		}
 		this.pending = features;
 		if (!this.timer) {
