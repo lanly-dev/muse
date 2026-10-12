@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { ColorApplier } from './colorApplier';
-import { PlayerPanel } from './playerPanel';
+import { PlayerController } from './playerController';
+import { MuseViewProvider } from './playerViewProvider';
 
 let applierRef: ColorApplier | undefined;
 
@@ -16,7 +17,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(statusBar);
 
 	let lastStatusText = '';
-	const player = new PlayerPanel(context, applier, (track, playing) => {
+	const player = new PlayerController(context, applier, (track, playing) => {
 		const text = track ? `$(note) ${track.title}` : '$(note) Muse';
 		const tooltip = track
 			? `${track.title} — ${track.subtitle}\n${
@@ -34,6 +35,8 @@ export function activate(context: vscode.ExtensionContext): void {
 	statusBar.text = '$(note) Muse';
 	statusBar.tooltip = 'Muse — music that colors your editor\nClick to open player';
 	statusBar.show();
+
+	MuseViewProvider.register(context, player);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('muse.openPlayer', () => {

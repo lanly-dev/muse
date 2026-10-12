@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- Player moved from a webview panel to an activity-bar view
+  (`muse-player` container, `muse.playerView`); single audio owner, no
+  double playback.
+
 ## [0.0.1] - 2026-10-11
 
 - Initial release: three generative stations (Neon Rain, Solar Drift,

@@ -1,1 +1,142 @@
-{"activationEvents":[],"categories":["Other"],"contributes":{"commands":[{"command":"muse.openPlayer","title":"Muse: Open Player"},{"command":"muse.play","title":"Muse: Play"},{"command":"muse.togglePlay","title":"Muse: Play / Pause"},{"command":"muse.nextStation","title":"Muse: Next Station"},{"command":"muse.playAudioFile","title":"Muse: Play Audio File…"},{"command":"muse.stop","title":"Muse: Stop and Restore Colors"}],"configuration":{"properties":{"muse.colorTargets":{"default":["statusBar","titleBar","activityBar"],"description":"Which workbench surfaces follow the melody (e.g. statusBar, titleBar, activityBar, sideBar).","items":{"type":"string"},"type":"array"},"muse.defaultStation":{"default":"neon-rain","description":"Generative station the player starts on.","enum":["neon-rain","solar-drift","night-drive"],"type":"string"},"muse.intensity":{"default":0.7,"description":"How strongly the music swings saturation and lightness (0 = subtle, 1 = vivid).","maximum":1,"minimum":0,"type":"number"},"muse.reactiveColors":{"default":true,"description":"Shift the workbench UI colors with the melody while music plays.","type":"boolean"},"muse.updateIntervalMs":{"default":300,"description":"Minimum milliseconds between workbench color updates.","minimum":120,"type":"number"},"muse.volume":{"default":0.8,"description":"Player volume.","maximum":1,"minimum":0,"type":"number"}},"title":"Muse"}},"description":"Generative music and local audio playback that colors your VS Code UI with the melody.","devDependencies":{"@types/mocha":"^10.0.10","@types/node":"24.x","@types/vscode":"^1.140.0","@vscode/test-cli":"^0.0.15","@vscode/test-electron":"^3.0.0","esbuild":"^0.28.1","eslint":"^10.5.0","npm-run-all":"^4.1.5","typescript":"^6.0.3","typescript-eslint":"^8.61.1"},"displayName":"Muse","engines":{"vscode":"^1.140.0"},"main":"./dist/extension.js","name":"muse","overrides":{"diff":"^8.0.4","serialize-javascript":"^7.0.6"},"scripts":{"check-types":"tsc --noEmit","compile":"npm run check-types && npm run lint && node esbuild.js","compile-tests":"tsc -p . --outDir out","lint":"eslint src","package":"npm run check-types && npm run lint && node esbuild.js --production","pretest":"npm run compile-tests && npm run compile && npm run lint","test":"vscode-test","vscode:prepublish":"npm run package","watch":"npm-run-all -p watch:*","watch-tests":"tsc -p . -w --outDir out","watch:esbuild":"node esbuild.js --watch","watch:tsc":"tsc --noEmit --watch --project tsconfig.json"},"version":"0.0.1"}
+{
+  "activationEvents": [],
+  "categories": [
+    "Other"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "muse.openPlayer",
+        "title": "Muse: Open Player"
+      },
+      {
+        "command": "muse.play",
+        "title": "Muse: Play"
+      },
+      {
+        "command": "muse.togglePlay",
+        "title": "Muse: Play / Pause"
+      },
+      {
+        "command": "muse.nextStation",
+        "title": "Muse: Next Station"
+      },
+      {
+        "command": "muse.playAudioFile",
+        "title": "Muse: Play Audio File\u2026"
+      },
+      {
+        "command": "muse.stop",
+        "title": "Muse: Stop and Restore Colors"
+      }
+    ],
+    "configuration": {
+      "properties": {
+        "muse.colorTargets": {
+          "default": [
+            "statusBar",
+            "titleBar",
+            "activityBar"
+          ],
+          "description": "Which workbench surfaces follow the melody (e.g. statusBar, titleBar, activityBar, sideBar).",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "muse.defaultStation": {
+          "default": "neon-rain",
+          "description": "Generative station the player starts on.",
+          "enum": [
+            "neon-rain",
+            "solar-drift",
+            "night-drive"
+          ],
+          "type": "string"
+        },
+        "muse.intensity": {
+          "default": 0.7,
+          "description": "How strongly the music swings saturation and lightness (0 = subtle, 1 = vivid).",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "muse.reactiveColors": {
+          "default": true,
+          "description": "Shift the workbench UI colors with the melody while music plays.",
+          "type": "boolean"
+        },
+        "muse.updateIntervalMs": {
+          "default": 300,
+          "description": "Minimum milliseconds between workbench color updates.",
+          "minimum": 120,
+          "type": "number"
+        },
+        "muse.volume": {
+          "default": 0.8,
+          "description": "Player volume.",
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "title": "Muse"
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "muse-player",
+          "title": "Muse",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "muse-player": [
+        {
+          "id": "muse.playerView",
+          "name": "Player",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "description": "Generative music and local audio playback that colors your VS Code UI with the melody.",
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/vscode": "^1.140.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.5.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
+  },
+  "displayName": "Muse",
+  "engines": {
+    "vscode": "^1.140.0"
+  },
+  "main": "./dist/extension.js",
+  "name": "muse",
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "compile-tests": "tsc -p . --outDir out",
+    "lint": "eslint src",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "test": "vscode-test",
+    "vscode:prepublish": "npm run package",
+    "watch": "npm-run-all -p watch:*",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json"
+  },
+  "version": "0.0.1"
+}

@@ -22,16 +22,16 @@ activity bar — so the editor glows with the song.
   lightness. Updates are smoothed and throttled; your own
   `workbench.colorCustomizations` are snapshotted and restored when you
   stop.
-- **Player panel** — transport controls, volume, loop toggle, and a
-  live 12-note chroma visualizer. Music keeps playing when the panel is
-  hidden.
+- **Player in the activity bar** — transport controls, volume, loop toggle,
+  and a live 12-note chroma visualizer, docked in the sidebar. Music keeps
+  playing when the view is hidden.
 - **Status bar** — shows the current track; click to open the player.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `Muse: Open Player` | Open the player panel |
+| `Muse: Open Player` | Reveal the player in the activity bar |
 | `Muse: Play` | Start the default generative station |
 | `Muse: Play / Pause` | Toggle playback |
 | `Muse: Next Station` | Switch to the next generative station |
@@ -59,7 +59,7 @@ activity bar — so the editor glows with the song.
 ## Known Issues
 
 - Browsers block audio until you interact with the page: if you start
-  playback from the command palette, click once inside the player panel
+  playback from the command palette, click once inside the player view
   to enable sound.
 
 ## Release Notes
