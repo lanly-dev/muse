@@ -1,9 +1,46 @@
 {
-  "activationEvents": [],
+  "name": "muse",
+  "displayName": "Muse",
+  "description": "Generative music and local audio playback that colors your VS Code UI with the melody.",
+  "publisher": "lanly-dev",
+  "version": "0.0.1",
+  "sponsor": {
+    "url": "https://github.com/sponsors/lanly-dev"
+  },
+  "engines": {
+    "vscode": "^1.140.0"
+  },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "music",
+    "audio",
+    "player",
+    "generative",
+    "color",
+    "theme"
+  ],
+  "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "muse-player",
+          "title": "Muse",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "muse-player": [
+        {
+          "id": "muse.playerView",
+          "name": "Player",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "muse.openPlayer",
@@ -81,48 +118,7 @@
         }
       },
       "title": "Muse"
-    },
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "muse-player",
-          "title": "Muse",
-          "icon": "media/icon.svg"
-        }
-      ]
-    },
-    "views": {
-      "muse-player": [
-        {
-          "id": "muse.playerView",
-          "name": "Player",
-          "type": "webview"
-        }
-      ]
     }
-  },
-  "description": "Generative music and local audio playback that colors your VS Code UI with the melody.",
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "24.x",
-    "@types/vscode": "^1.140.0",
-    "@vscode/test-cli": "^0.0.15",
-    "@vscode/test-electron": "^3.0.0",
-    "esbuild": "^0.28.1",
-    "eslint": "^10.5.0",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.1"
-  },
-  "displayName": "Muse",
-  "engines": {
-    "vscode": "^1.140.0"
-  },
-  "main": "./dist/extension.js",
-  "name": "muse",
-  "overrides": {
-    "diff": "^8.0.4",
-    "serialize-javascript": "^7.0.6"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
@@ -138,5 +134,28 @@
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json"
   },
-  "version": "0.0.1"
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/vscode": "^1.140.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.5.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lanly-dev/muse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lanly-dev/muse/issues"
+  },
+  "license": "MIT"
 }
