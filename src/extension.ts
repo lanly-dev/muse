@@ -1,26 +1,79 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { ColorApplier } from './colorApplier';
+import { PlayerPanel } from './playerPanel';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+let applierRef: ColorApplier | undefined;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "muse" is now active!');
+export function activate(context: vscode.ExtensionContext): void {
+	const applier = new ColorApplier();
+	applierRef = applier;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('muse.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Muse!');
+	const statusBar = vscode.window.createStatusBarItem(
+		vscode.StatusBarAlignment.Right,
+		100
+	);
+	statusBar.command = 'muse.openPlayer';
+	context.subscriptions.push(statusBar);
+
+	let lastStatusText = '';
+	const player = new PlayerPanel(context, applier, (track, playing) => {
+		const text = track ? `$(note) ${track.title}` : '$(note) Muse';
+		const tooltip = track
+			? `${track.title} — ${track.subtitle}\n${
+					playing ? 'Playing' : 'Paused'
+				} — click to open Muse player`
+			: 'Muse — music that colors your editor\nClick to open player';
+		// 'features' messages arrive ~11x/sec; don't churn the status bar.
+		if (text !== lastStatusText) {
+			statusBar.text = text;
+			lastStatusText = text;
+		}
+		statusBar.tooltip = tooltip;
+		statusBar.show();
 	});
+	statusBar.text = '$(note) Muse';
+	statusBar.tooltip = 'Muse — music that colors your editor\nClick to open player';
+	statusBar.show();
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('muse.openPlayer', () => {
+			player.reveal();
+		}),
+		vscode.commands.registerCommand('muse.play', () => {
+			player.playSynth();
+			applier.start();
+		}),
+		vscode.commands.registerCommand('muse.togglePlay', () => {
+			player.toggle();
+			applier.start();
+		}),
+		vscode.commands.registerCommand('muse.nextStation', () => {
+			player.nextStation();
+			applier.start();
+		}),
+		vscode.commands.registerCommand('muse.playAudioFile', () => {
+			void player.playAudioFile().then(() => applier.start());
+		}),
+		vscode.commands.registerCommand('muse.stop', () => {
+			void player.stopPlayback();
+		}),
+		vscode.workspace.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration('muse.reactiveColors')) {
+				const enabled = vscode.workspace
+					.getConfiguration('muse')
+					.get<boolean>('reactiveColors', true);
+				if (!enabled) {
+					void applier.stop();
+				} else {
+					applier.start();
+				}
+			}
+		})
+	);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): void {
+	// Best-effort: restore the user's own colors if VS Code closes mid-play.
+	void applierRef?.stop();
+	applierRef = undefined;
+}
