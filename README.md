@@ -5,7 +5,8 @@ generative synth engine composes endless lofi / ambient / synthwave
 melodies (no audio files needed), or play your own MP3/WAV/OGG files.
 While music plays, real-time analysis (pitch-class chroma, energy,
 brightness) drives the workbench colors — status bar, title bar,
-activity bar — so the editor glows with the song.
+activity bar, side bar, panel, and the editor background — so the whole
+IDE glows with the song.
 
 ## Features
 
@@ -20,10 +21,12 @@ activity bar — so the editor glows with the song.
 - **Melody-reactive UI** — dominant pitch class → hue (C = red, walking
   the chromatic wheel), energy → saturation, timbre brightness →
   lightness. Updates are smoothed and throttled; colors are written to
-  the **workspace** settings scope only (your user settings are never
-  touched). Your pre-play colors are saved as a profile and restored
-  when you stop — even if the window closed mid-song, the leftover
-  profile is restored on next launch.
+  your **global** `workbench.colorCustomizations` so they work with or
+  without a workspace folder open. Before the first write, your existing
+  colors are saved as a profile and restored exactly when you stop —
+  even if the window closed mid-song, the leftover profile is restored
+  on next launch. The whole IDE follows the melody: status bar, title
+  bar, activity bar, side bar, panel, and editor background.
 - **Player in the activity bar** — transport controls, volume, loop toggle,
   and a live 12-note chroma visualizer, docked in the sidebar. Music keeps
   playing when the view is hidden.
