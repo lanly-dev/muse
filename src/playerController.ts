@@ -2,6 +2,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ColorApplier } from './colorApplier';
 import { AudioFeatures } from './colors';
+import {
+	DEFAULT_STATION,
+	DEFAULT_VOLUME,
+	VOLUME_STATE_KEY,
+} from './constants';
 
 export interface TrackInfo {
 	title: string;
@@ -174,14 +179,13 @@ export class PlayerController {
 	handleMessage(msg: WebviewIn): void {
 		switch (msg.type) {
 			case 'ready': {
-				const cfg = vscode.workspace.getConfiguration('muse');
-				this.post({
-					cmd: 'set-station',
-					station: cfg.get<string>('defaultStation', 'neon-rain'),
-				});
+				this.post({ cmd: 'set-station', station: DEFAULT_STATION });
 				this.post({
 					cmd: 'set-volume',
-					volume: cfg.get<number>('volume', 0.8),
+					volume: this.context.globalState.get<number>(
+						VOLUME_STATE_KEY,
+						DEFAULT_VOLUME
+					),
 				});
 				break;
 			}
@@ -202,9 +206,8 @@ export class PlayerController {
 				void this.playAudioFile().then(() => this.applier.start());
 				break;
 			case 'set-volume':
-				void vscode.workspace
-					.getConfiguration('muse')
-					.update('volume', msg.volume, vscode.ConfigurationTarget.Global);
+				// Persisted silently; no user-facing setting for this.
+				void this.context.globalState.update(VOLUME_STATE_KEY, msg.volume);
 				break;
 			case 'error':
 				void vscode.window.showWarningMessage(`Muse: ${msg.message}`);

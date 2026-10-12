@@ -6,6 +6,11 @@ import {
 	featuresToColors,
 	lerpAngle,
 } from './colors';
+import {
+	COLOR_TARGETS,
+	DEFAULT_INTENSITY,
+	UPDATE_INTERVAL_MS,
+} from './constants';
 
 /** globalState key holding the saved pre-play color profile. */
 const PROFILE_KEY = 'muse.colorProfile';
@@ -101,8 +106,10 @@ export class ColorApplier {
 		if (!features || !this.active) {
 			return;
 		}
-		const cfg = vscode.workspace.getConfiguration('muse');
-		if (!cfg.get<boolean>('reactiveColors', true)) {
+		const reactive = vscode.workspace
+			.getConfiguration('muse')
+			.get<boolean>('reactiveColors', true);
+		if (!reactive) {
 			return;
 		}
 		if (!this.hasWorkspace()) {
@@ -114,8 +121,8 @@ export class ColorApplier {
 			}
 			return;
 		}
-		const intensity = clamp01(cfg.get<number>('intensity', 0.7));
-		const intervalMs = Math.max(120, cfg.get<number>('updateIntervalMs', 300));
+		const intensity = clamp01(DEFAULT_INTENSITY);
+		const intervalMs = Math.max(120, UPDATE_INTERVAL_MS);
 		const now = Date.now();
 		if (now - this.lastWrite < intervalMs) {
 			// Hold this frame for the next tick; keep smoothing state fresh.
@@ -139,11 +146,7 @@ export class ColorApplier {
 		};
 		const { background, foreground } = featuresToColors(smoothed, intensity);
 
-		const targets = cfg.get<string[]>('colorTargets', [
-			'statusBar',
-			'titleBar',
-			'activityBar',
-		]);
+		const targets = COLOR_TARGETS;
 		const customizations = this.readWorkspaceCustomizations();
 		let changed = false;
 		for (const target of targets) {
