@@ -117,14 +117,14 @@ export class ColorApplier {
 			return;
 		}
 
-		// Smooth: fast attack on energy, slow release; hue glides circularly.
+		// Smooth: fast attack on energy, quick release; hue tracks briskly.
 		const hue = chromaToHue(features.chroma);
 		this.lastHue =
-			this.lastHue === undefined ? hue : lerpAngle(this.lastHue, hue, 0.35);
+			this.lastHue === undefined ? hue : lerpAngle(this.lastHue, hue, 0.55);
 		const e = clamp01(features.energy);
-		this.lastSat += (e - this.lastSat) * (e > this.lastSat ? 0.5 : 0.12);
+		this.lastSat += (e - this.lastSat) * (e > this.lastSat ? 0.6 : 0.25);
 		const b = clamp01(features.brightness);
-		this.lastLight += (b - this.lastLight) * 0.25;
+		this.lastLight += (b - this.lastLight) * 0.35;
 
 		const smoothed: AudioFeatures = {
 			chroma: hueToChromaHint(this.lastHue),
