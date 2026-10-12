@@ -4,7 +4,7 @@
  */
 export const DEFAULT_STATION = 'neon-rain';
 export const DEFAULT_INTENSITY = 0.7;
-export const UPDATE_INTERVAL_MS = 300;
+export const UPDATE_INTERVAL_MS = 120;
 export const COLOR_TARGETS = [
 	'statusBar',
 	'titleBar',
